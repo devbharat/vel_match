@@ -406,7 +406,7 @@ static int16_t airspeed_nudge_cm;
 // 0-(throttle_max - throttle_cruise) : throttle nudge in Auto mode using top 1/2 of throttle stick travel
 static int16_t throttle_nudge = 0;
 
-// receiver RSSI
+// receiv  er RSSI
 static uint8_t receiver_rssi;
 
 
@@ -416,6 +416,7 @@ static uint8_t receiver_rssi;
 // The amount current ground speed is below min ground speed.  Centimeters per second
 static int32_t groundspeed_undershoot = 0;
 
+static int32_t target_gndspeed_cm = 1700;
 ////////////////////////////////////////////////////////////////////////////////
 // Location Errors
 ////////////////////////////////////////////////////////////////////////////////

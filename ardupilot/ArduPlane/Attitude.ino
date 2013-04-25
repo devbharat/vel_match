@@ -239,34 +239,30 @@ static void calc_throttle()
         // AUTO, RTL, etc
         // ---------------------------------------------------------------------------
     if (!alt_control_airspeed()) {
-        if (altitude_error_cm*altitude_error_cm >= 4000000){//altitude error +/-20 m
-            int16_t throttle_target = g.throttle_cruise + throttle_nudge;
-        
+       int16_t throttle_target = g.throttle_cruise + throttle_nudge;
+        if (false){//(altitude_error_cm*altitude_error_cm >= 1000000){//altitude error +/-20 m
             if (nav_pitch_cd >= 0) {
                 g.channel_throttle.servo_out = throttle_target + (g.throttle_max - throttle_target) * nav_pitch_cd / g.pitch_limit_max_cd;
             } else {
                 g.channel_throttle.servo_out = throttle_target - (throttle_target - g.throttle_min) * nav_pitch_cd / g.pitch_limit_min_cd;
             }
-        g.channel_throttle.servo_out = constrain_int16(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
-
         } else {
-        /*    
+            
             int16_t throttle_vel_hold;
-            if (g_gps->ground_speed >= 1600){
+            if (g_gps->ground_speed >= target_gndspeed_cm){
             throttle_vel_hold =  (g.throttle_max.get())*0.45;//constrain_int16(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
             } else {
-            throttle_vel_hold =  (g.throttle_max.get())*0.75;      
+            throttle_vel_hold =  (g.throttle_max.get())*0.85;      
             }
 
             if (nav_pitch_cd >= 0) {
-                g.channel_throttle.servo_out = throttle_vel_hold + (g.throttle_max - throttle_target) * nav_pitch_cd * 0.3 / g.pitch_limit_max_cd;
+                g.channel_throttle.servo_out = throttle_vel_hold + (g.throttle_max - throttle_target) * nav_pitch_cd * 0.2 / g.pitch_limit_max_cd;
             } else {
-                g.channel_throttle.servo_out = throttle_vel_hold - (throttle_target - g.throttle_min) * nav_pitch_cd * 0.3 / g.pitch_limit_min_cd;
+                g.channel_throttle.servo_out = throttle_vel_hold - (throttle_target - g.throttle_min) * nav_pitch_cd * 0.2 / g.pitch_limit_min_cd;
             }
-            g.channel_throttle.servo_out = constrain_int16(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
-        */
-             g.channel_throttle.servo_out = g.throttle_max.get();//test
         }
+            g.channel_throttle.servo_out = constrain_int16(g.channel_throttle.servo_out, g.throttle_min.get(), g.throttle_max.get());
+
     } else {
         // throttle control with airspeed compensation
         // -------------------------------------------
