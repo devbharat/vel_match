@@ -1,0 +1,9 @@
+libraries/GCS_MAVLink/GCS_MAVLink.h~:59:		mavlink_comm_1_port->write(ch);
+libraries/GCS_MAVLink/GCS_MAVLink.h~:193:		data = mavlink_comm_1_port->read();
+libraries/GCS_MAVLink/GCS_MAVLink.h~:237:		bytes = mavlink_comm_1_port->available();
+libraries/GCS_MAVLink/GCS_MAVLink.h~:261:		ret = mavlink_comm_1_port->txspace();
+libraries/GCS_MAVLink/GCS_MAVLink.cpp:64:		mavlink_comm_1_port->write(buf, len);
+libraries/GCS_MAVLink/GCS_MAVLink.h:59:		mavlink_comm_1_port->write(ch);
+libraries/GCS_MAVLink/GCS_MAVLink.h:193:		data = mavlink_comm_1_port->read();
+libraries/GCS_MAVLink/GCS_MAVLink.h:237:		bytes = mavlink_comm_1_port->available();
+libraries/GCS_MAVLink/GCS_MAVLink.h:261:		ret = mavlink_comm_1_port->txspace();

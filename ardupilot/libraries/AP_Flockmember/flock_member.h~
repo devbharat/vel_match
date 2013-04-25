@@ -1,0 +1,87 @@
+// AP_flock_member.h
+
+#ifndef _AP_FLOCK_MEMBER_h
+#define _AP_FLOCK_MEMBER_h
+
+//including formation_common.h should include: APM_Config, AP_Math, AP_Common, Arduino.h, stdint.h, c++.h, and AP_Param.h
+//also, allows for use of Vector3<T> and Matrix3<T>, Relative struct, and RollCall struct
+#include "formation_common.h"
+
+//-------------
+class flock_member
+{
+ private:
+	 //flock member state
+	 uint8_t	_sysid;				//The sysid of the flock member (Current convention: Huey = 1, Dewey = 2, Louie = 3, N/A = 0)
+	 Location	_my_location;		//Location structure: {id, options, p1, alt, lat, lng} *See AP_Common ln 210-217 for detail
+	 uint32_t	_time_boot_ms;		//Timestamp (milliseconds since system boo)
+	 int32_t	_lat;				//Latitude, expressed as *1E7
+	 int32_t	_lon;				//Longitude, expressed as *1E7
+	 int32_t	_alt;				//Altitude in meters, expressed as *1000 (mm), above MSL
+	 int32_t	_relative_alt;		//Altitude above ground in meters, expressed as *1000 (mm)
+	 Vector3ui	_V;					//Ground Speed (GPS frame), expressed as m/s *100
+	 uint16_t	_hdg;				//Compass heading in degrees *100, 0.0...359.99 degrees, if unknown, set to 65535
+
+	 //flock Leadership
+	 bool			_global_leader;				//True if a/c is the global leader, False if the a/c is following another flock member
+	 uint8_t		_local_leader;				//The sysid of the local leader (Current convention: Huey = 1, Dewey = 2, Louie = 3, N/A = 0)
+
+	 //flock membership
+	 uint8_t		_num_members;				//The number of a/c systems in view default is 0
+	 flock_member*	_member_ptrs[FLOCK_SIZE];	//array to hold the pointers to the members in view, for information retrieval purposes
+	 uint8_t		_member_ids[FLOCK_SIZE];	//array to hold the sysid of the members in view, for indexing purposes
+	 
+	 //relative positions
+	 Vector3f	_dX[FLOCK_SIZE];	//Distance between a/c and other flock members (NED frame) if ft*100 (2 decimal precision) 	
+	 
+	 //velocities relative to leader
+	 Vector3f	_dV;				//Ground speed (NED frame) difference between a/c and leader, expressed as ft/s *100 (2 decimal precision)
+	 Relative	_my_relative;		//Structure containing all the relative S/A information
+	 
+	 //distance magnitude from leader
+	 float	_dist_2_leader;		//Magnitude of distance between a/c and leader, expressed as ft *100 (2 decimal precision)
+ public:
+//////////////DEBUG///////////////////
+	 int32_t debug_my_lat;
+	 int32_t debug_my_lon;
+	 int32_t debug_their_lat;
+	 int32_t debug_their_lon;
+/////////////DEBUG///////////////////
+
+
+	//Overloaded constructors: One for a/c flock member and one for other flock members
+	flock_member();					//Constructor for a/c
+	flock_member(uint8_t sysid);	//Constructor function for other flock member
+	
+	//Publicly accessible status checks
+	bool state_updated;				//True if the state of the flock member has been updated
+	bool rel_updated;				//True if the relative state of the a/c flock member has been updated
+	bool in_view;					//True if flock member can be seen by a/c (**may or may not be implemented**)
+
+	//Functions to set protected variables 
+	void set_state(int32_t &current_lat, int32_t &current_lon, int32_t &current_alt, int32_t &current_relative_alt, 
+					int16_t &current_vx, int16_t &current_vy, int16_t &current_vz, uint16_t &current_hdg);
+	
+	//// Only applicable to a/c flock member
+	void set_local_leader(uint8_t leader_sysid);	// Assigns the sysid of the local leader, found through swarm algorithm
+	void set_global_leader(bool global_status);	// If no leaders are available, assigns the role of global leader
+
+	//Functions to get protected variables
+	const Location*	get_loc();				//returns a pointer to a copy of the private location structure
+	const uint8_t*	get_vel();				//returns a pointer to an array of the private velocity variables {_vx_fps, _vy_fps, _vz_fps}
+	const uint16_t* get_hdg();				//returns a pointer to the flockmember heading in cd (deg*100)
+	const Relative*	get_rel();				//returns a pointer to a copy of the private relative structure
+	const uint32_t*	get_last_update_time();	//returns timestamp of last update
+	bool get_leader_status();				//returns global leader status	
+
+	//Function to update a/c flock member
+	void update_rel();
+	
+	//Function to add/remove flock members from view
+	void add_member_in_view(uint8_t sysid, flock_member* p_member);
+	void remove_member_in_view(uint8_t sysid);
+};
+extern flock_member FLOCK_MEMBER;
+
+#endif
+
